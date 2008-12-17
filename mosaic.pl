@@ -1,7 +1,9 @@
-#!/opt/local/bin/perl
+#!/usr/bin/perl
 
 use warnings;
 use strict;
+use GD;
+use Image::Resize;
 use Data::Dumper;
 
 sub legocolor {
@@ -25,7 +27,7 @@ sub legocolor {
 sub brickset {
   my($size) = shift;
 
-  my @colors;
+  #my @colors;
   #for my $n ( 1 .. 8 ) {
     #push @colors, [ int rand 256, int rand 256, int rand 256 ];
   #}
@@ -55,6 +57,26 @@ sub origimage {
   }
   #warn Dumper @img;
   return @img;
+}
+
+sub readimage {
+  my $orig = Image::Resize->new( $ARGV[0] );
+  my $img = $orig->resize(12, 12, 0);
+  #my $img = GD::Image->new( $ARGV[ 0 ] );
+  my @pixels;
+  #my( $w, $h ) = $img->getBounds;
+  #print "The image '$ARGV[ 0 ]' is $w x $h pixels.";
+
+  #printf "The color of the pixel in the middle is: [0x%02x:0x%02x:0x%02x].\n",
+      #$img->rgb( $img->getPixel( $w/2, $h/2 ) );
+
+  for my $y ( 0 .. 11 ) {
+    for my $x ( 0 .. 11 ) {
+      #printf "[0x%02x:0x%02x:0x%02x].\n", $img->rgb( $img->getPixel($x,$y) );
+      push @pixels, [ $img->rgb( $img->getPixel($x,$y) ) ];
+    }
+  }
+  return @pixels;
 }
 
 # 3D distance between two coordinates
@@ -90,7 +112,7 @@ sub swap {
     next if $i == $j;
     my $better = improve($orig->[$i], $new->[$i], $orig->[$j], $new->[$j]);
     if ( $better > 0 ) {
-      warn "$n: Swapping $i and $j - $better\n";
+      #warn "$n: Swapping $i and $j - $better\n";
       ($new->[$i], $new->[$j]) = ($new->[$j], $new->[$i]);
     } else {
       #warn "Keeping $i and $j - $better\n";
@@ -129,7 +151,7 @@ sub dumphtml {
 
 
 my $size = 12**2;
-my @orig = origimage($size);
+my @orig = readimage($size);
 my @new = brickset($size);
 my @first = @new;
 swap(\@orig, \@new);
