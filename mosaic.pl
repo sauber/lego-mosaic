@@ -20,6 +20,47 @@ sub legocolor {
   );
 }
 
+# The set of bricks I have
+#
+sub mybricks {
+  my @def = qw(
+    Black     212121  7
+    White     FFFFFF  3
+    Red       C40026 20
+    OldGrey   C1C2C1  2
+    Yellow    FFDC00 23
+    Blue      0033B2 12
+    OldDkGray 635F52  7
+    Green     008C14 12
+    Tan       E8CFA1 15
+    Brown     5C2000  5
+    Orange    F96000  9
+    DkRed     78001C  3
+    TrBlue    0020A0  1
+    TrLtBlue  AEEFEC  2
+    DkGreen   27462C  6
+    BtGreen   6BEE90  7
+    DkTan     C59750  6
+    DKYellow  FDB300  1
+    BtOrange  FB8700  3
+  );
+
+  my @set;
+  while ( @def ) {
+    my $name = shift @def;
+    my $hex  = shift @def;
+    my $num  = shift @def;
+    my $r = hex substr $hex, 0, 2;
+    my $g = hex substr $hex, 2, 2;
+    my $b = hex substr $hex, 4, 2;
+    #print "$name - $num [ $r, $g, $b ]\n";
+    for ( 1 .. $num) {
+      push @set, [ $r, $g, $b ];
+    }
+  }
+  return @set;
+}
+
 # Generate a set of bricks of random color
 # First generate 8 random color
 # Then choose from the random color and add to set
@@ -150,9 +191,11 @@ sub dumphtml {
 }
 
 
+#mybricks();
 my $size = 12**2;
 my @orig = readimage($size);
-my @new = brickset($size);
+#my @new = brickset($size);
+my @new = mybricks($size);
 my @first = @new;
 swap(\@orig, \@new);
 dumphtml(\@orig, \@new, \@first);
